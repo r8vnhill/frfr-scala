@@ -4,6 +4,8 @@ package model.items.factories
 
 import model.items.PhoenixDown
 
+import cl.ravenhill.oop.frfr.exceptions.FactoryConfigurationException
+
 /** A specific factory for creating [[PhoenixDown]] items.
  *
  * This factory creates `PhoenixDown` items using the provided name, which can be set after the
@@ -18,15 +20,17 @@ import model.items.PhoenixDown
  * @version 1.0
  */
 class PhoenixDownFactory extends ItemFactory[PhoenixDown] {
-  /// Documentation inherited from [[ItemFactory]]
+
   override var name: Option[String] = None
 
-  /** Creates a new `PhoenixDown` with the specified name.
-   *
-   * @return A new `PhoenixDown` with the given name.
-   * @throws NoSuchElementException If `name` is not set.
-   */
+  var restore: Option[Double] = None
+
+  private def isReady: Boolean = name.isDefined && restore.isDefined
+
   override def createItem(): PhoenixDown = {
-    new PhoenixDown(name.get)
+    if (!isReady) {
+      throw new FactoryConfigurationException("Factory is not ready: name and restore must be defined.")
+    }
+    new PhoenixDown(name.get, restore.get)
   }
 }

@@ -21,15 +21,6 @@ import model.characters.GameCharacter
  * @version 1.0
  */
 class Ether(override val name: String, val restore: Int) extends Item {
-  /** Uses this ether on a target `GameCharacter`, restoring their mana by its restore value.
-   *
-   * When the ether is used, it prints a message to the console indicating the amount of mana
-   * restoration and the name of the character it was used on.
-   *
-   * @param target The `GameCharacter` on which the ether will be used.
-   */
-  override def useOn(target: GameCharacter): Unit = {
-    println(s"Restoring $restore MP to ${target.name}")
-  }
+  override def useOn(target: GameCharacter): Unit = target.currentMana += restore
 }
 

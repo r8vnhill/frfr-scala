@@ -2,6 +2,7 @@
 package cl.ravenhill.oop.frfr
 package model.items
 
+import exceptions.{InvalidItemUseException, InvalidStatException}
 import model.characters.GameCharacter
 
 /** Represents a Phoenix Down in the game that can revive a dead `GameCharacter`.
@@ -15,26 +16,19 @@ import model.characters.GameCharacter
  *
  * @constructor Creates a new Phoenix Down with a given name.
  * @param name The name of the Phoenix Down.
- *
  * @author <a href="https://www.github.com/r8vnhill">R8V</a>
  * @since 1.0
  * @version 1.0
  */
-class PhoenixDown(override val name: String) extends Item {
-  /** Uses this Phoenix Down on a target `GameCharacter`, reviving them if they are dead.
-   *
-   * When the Phoenix Down is used, if the target character is dead, it prints a message to the
-   * console indicating the character's revival. If the character is already alive, it prints
-   * a different message.
-   *
-   * @param target The `GameCharacter` on which the Phoenix Down will be used.
-   */
+class PhoenixDown(override val name: String, val restore: Double) extends Item {
+  if (restore < 0 || restore > 1) {
+    throw new InvalidStatException("Phoenix Down restore value must be between 0 and 1.")
+  }
+
   override def useOn(target: GameCharacter): Unit = {
-    if (!target.isAlive) {
-      println(s"Reviving ${target.name}")
-    } else {
-      println(s"${target.name} is already alive")
-    }
+    if (target.isAlive)
+      throw new InvalidItemUseException("Phoenix Down cannot be used on a living character.")
+    target.currentHealth = (target.maxHealth * restore).toInt
   }
 }
 

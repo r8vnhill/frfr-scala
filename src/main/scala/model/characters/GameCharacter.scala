@@ -11,19 +11,13 @@ package model.characters
  * @version 1.0
  */
 trait GameCharacter {
-  /** The name of the game character. */
   val name: String
-
-  /** Checks if the character is alive.
-   *
-   * @return true if the character is alive; false otherwise.
-   */
+  val maxHealth: Int
+  def currentHealth: Int
+  def currentHealth_=(value: Int): Unit
+  val maxMana: Int
+  def currentMana: Int
+  def currentMana_=(value: Int): Unit
   def isAlive: Boolean
-
-  /** Makes the character attack another game character.
-   *
-   * @param target the game character that will be attacked.
-   */
   def attack(target: GameCharacter): Unit
 }
-

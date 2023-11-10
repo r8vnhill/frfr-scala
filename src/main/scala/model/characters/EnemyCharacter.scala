@@ -14,4 +14,4 @@ package model.characters
  * @since 1.0
  * @version 1.0
  */
-class EnemyCharacter(name: String) extends AbstractCharacter(name)
+class EnemyCharacter(name: String, maxHealth: Int) extends AbstractCharacter(name, maxHealth)
