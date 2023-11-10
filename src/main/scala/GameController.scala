@@ -1,14 +1,16 @@
 package cl.ravenhill.oop.frfr
 
 import model.characters.{EnemyCharacter, GameCharacter, PlayerCharacter}
+import model.items.Item
+import model.items.factories.{EtherFactory, ItemFactory, PhoenixDownFactory, PotionFactory}
 import states.{GameState, IdleState}
 
-import cl.ravenhill.oop.frfr.model.items.Item
-import cl.ravenhill.oop.frfr.model.items.factories.{EtherFactory, ItemFactory, PhoenixDownFactory, PotionFactory}
+import cl.ravenhill.oop.frfr.model.CharacterDeathEvent
+import cl.ravenhill.oop.frfr.observer.{Observer, Subject}
 
 import scala.collection.mutable
 
-class GameController {
+class GameController extends Observer[CharacterDeathEvent] {
 
   private var playerCharacters = List.empty[PlayerCharacter]
 
@@ -30,14 +32,27 @@ class GameController {
 
   private val phoenixDownFactory = new PhoenixDownFactory
 
-  def startGame(playerCharacters: Seq[(String, Int)], enemyCharacter: Seq[(String, Int)]): Unit = {
-    for ((name, maxHealth) <- playerCharacters) {
-      addPlayerCharacter(name, maxHealth)
+  def startGame(playerCharacters: Seq[(String, Int, Int)], enemyCharacter: Seq[(String, Int, Int)]): Unit = {
+    for ((name, maxHealth, maxMana) <- playerCharacters) {
+      addPlayerCharacter(name, maxHealth, maxMana)
     }
-    for ((name, maxHealth) <- enemyCharacter) {
-      addEnemyCharacter(name, maxHealth)
+    for ((name, maxHealth, maxMana) <- enemyCharacter) {
+      addEnemyCharacter(name, maxHealth, maxMana)
     }
     state = new IdleState(this)
+  }
+
+  override def update(observable: Subject[CharacterDeathEvent], event: CharacterDeathEvent): Unit = {
+    if (event.isEnemy) {
+      enemyCharacters = enemyCharacters.filterNot(_ == observable)
+    } else {
+      playerCharacters = playerCharacters.filterNot(_ == observable)
+    }
+    if (enemyCharacters.isEmpty) {
+      println("You win!")
+    } else if (playerCharacters.isEmpty) {
+      println("You lose!")
+    }
   }
 
   def promptSelection(): Unit = {
@@ -62,11 +77,25 @@ class GameController {
     factory.name = Some(name)
     inventory += name -> factory.createItem()
   }
-  def addPlayerCharacter(name: String, maxHealth: Int): Unit = {
-    playerCharacters = new PlayerCharacter(name, maxHealth) :: playerCharacters
+
+  def addPotion(name: String, healing: Int): Unit = {
+    potionFactory.healing = Some(healing)
+    addToInventory(potionFactory, name)
   }
 
-  def addEnemyCharacter(name: String, maxHealth: Int): Unit = {
-    enemyCharacters = new EnemyCharacter(name, maxHealth) :: enemyCharacters
+  def addEther(name: String, restore: Int): Unit = {
+    etherFactory.restore = Some(restore)
+    addToInventory(etherFactory, name)
   }
+
+  def addPhoenixDown(name: String, restore: Double): Unit = {
+    phoenixDownFactory.restore = Some(restore)
+    addToInventory(phoenixDownFactory, name)
+  }
+
+  def addPlayerCharacter(name: String, maxHealth: Int, maxMana: Int): Unit =
+    playerCharacters = new PlayerCharacter(name, maxHealth, maxMana) :: playerCharacters
+
+  def addEnemyCharacter(name: String, maxHealth: Int, maxMana: Int): Unit =
+    enemyCharacters = new EnemyCharacter(name, maxHealth, maxMana) :: enemyCharacters
 }
