@@ -3,24 +3,25 @@ package model.items
 
 import model.characters.GameCharacter
 
-/** Represents an Ether in the game that can restore a `GameCharacter`'s mana points (MP).
- *
- * An `Ether` is a specific type of `Item` that has a mana restoration effect on the character it
- * is used on. The amount of mana restoration it provides is specified at the time of creation and
- * cannot be changed afterward.
- *
- * When an `Ether` is used on a character (by calling the `useOn` method), a message is printed
- * indicating the amount of mana restoration and the name of the character it was used on.
- *
- * @constructor Creates a new ether with a given name and mana restoration effect.
- * @param name The name of the ether.
- * @param restore The amount of mana restoration the ether provides when used.
- *
- * @author <a href="https://www.github.com/r8vnhill">R8V</a>
- * @since 1.0
- * @version 1.0
- */
+/** Represents an `Ether` item in a game, extending the `Item` class. `Ether` is typically used for restoring
+  * a certain amount of mana (or a similar resource) to a game character. This class encapsulates the properties
+  * and behavior specific to Ether items.
+  *
+  * The `Ether` item holds a `restore` value indicating the amount of mana it can replenish when used on a character.
+  * The `useOn` method defines the action of using the Ether on a target `GameCharacter`, which involves increasing
+  * the target's current mana by the `restore` value.
+  *
+  * @constructor Initializes a new Ether item with a name and a restore value.
+  * @param name The name of the Ether item.
+  * @param restore The amount of mana this Ether item can restore.
+  */
 class Ether(override val name: String, val restore: Int) extends Item {
-  override def useOn(target: GameCharacter): Unit = target.currentMana += restore
-}
 
+  /** Uses this Ether item on a specified target game character.
+    * Increases the character's current mana by this item's restore value.
+    *
+    * @param target The `GameCharacter` on whom the Ether is to be used.
+    */
+  override def useOn(target: GameCharacter): Unit =
+    target.currentMana += restore
+}
